@@ -1,16 +1,10 @@
 const mysql = require('mysql2');
 const inquirer = require('inquirer');
 const consoleTable = require('console.table');
+const sequelize = require('./config/connection');
 
-// Connect to database
-const db = mysql.createConnection(
-    {
-      host: 'localhost',
-      // MySQL username,
-      user: 'root',
-      // TODO: Add MySQL password
-      password: 'CEDNet7125!',
-      database: 'schema.sql'
-    },
-    console.log(`Connected to the books_db database.`)
-  );
+
+  // turn on connection to db and server
+sequelize.sync({ force: false }).then(() => {
+  app.listen(PORT, () => console.log('Now listening'));
+});
