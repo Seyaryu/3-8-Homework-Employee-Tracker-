@@ -80,19 +80,28 @@ function startApp() {
   };
 
   function showDepts() {
-      // console.table('employee_db', [...]);
-
+    connection.query('SELECT * FROM department', (err, res) => {
+      if (err) throw err;
+      console.table(res);
       initPrompt();
+    })
+
   };
 
   function showRoles() {
-
+    connection.query('SELECT * FROM role', (err, res) => {
+      if (err) throw err;
+      console.table(res);
       initPrompt();
+    })
   };
 
   function showEmployees() {
-
+    connection.query('SELECT * FROM employee', (err, res) => {
+      if (err) throw err;
+      console.table(res);
       initPrompt();
+    })    
   };
 
   function addDept() {
