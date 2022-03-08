@@ -18,5 +18,5 @@ values ('Accounts Payables', 50000, 1),
 insert into employee (first_name, last_name, role_id, manager_name)
 values ('David', 'Ferdinand', 9, 'Rebecca Newman'),
         ('Dennis', 'McDonald', 3, 'Donald Davis'),
-        ('Luke', 'Lively', 1, null),
+        ('Luke', 'Lively', 1, null);
         
