@@ -2,6 +2,8 @@ DROP DATABASE IF EXISTS employee_db;
 
 CREATE DATABASE employee_db;
 
+use employee_db;
+
 create Table employee (
     id INT PRIMARY KEY AUTO_INCREMENT,
     first_name VARCHAR(30) not null,
