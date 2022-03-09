@@ -170,8 +170,59 @@ function startApp() {
   };
 
   function addEmployee() {
+    inquirer.prompt([
+      {
+        type: "input",
+        name: "firstName",
+        message: "What is the employee's first name?"
+      },
+      {
+        type: "input",
+        name: "lastName",
+        message: "What is the employee's last name?"
+      }
+    ]).then((answer) => {
+      const params = [answer.firstName, answer.lastName];
 
-      initPrompt();
+      connection.query(`SELECT role.id, role.title FROM role`, (err, res) => {
+        if (err) throw err;
+
+        const roleList = res.map(({id, title}) => ({name:title, value:id}));
+
+        inquirer.prompt([
+          {
+            type: 'list',
+            name: 'role',
+            message: "What is the employee's role?",
+            choices: roleList
+          }
+        ]).then((answer) => {
+          const role = answer.role;
+          params.push(role);
+
+          inquirer.prompt([
+            {
+              type: 'input',
+              name: 'manager',
+              message: 'Who is their manager?'
+            }
+          ]).then((answer) => {
+            params.push(answer.manager);
+
+            const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_name)
+            VALUES (?, ?, ?, ?)`;
+
+            connection.query(sql, params, (err, result) => {
+              if (err) throw err;
+
+              console.log(`${params[0]} ${params[1]} has been added!`);
+
+              initPrompt();
+            })
+          })
+        })
+      });
+    })
   };
 
   function updateEmployee() {
