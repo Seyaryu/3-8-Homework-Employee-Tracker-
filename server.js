@@ -105,13 +105,68 @@ function startApp() {
   };
 
   function addDept() {
-
-      initPrompt();
+    inquirer.prompt(
+      {
+        name: "deptName",
+        type: "input",
+        message: "What is the new department's name?"
+      }
+    ).then((answer) => {
+      connection.query(`INSERT INTO department (name) Values ("${answer.deptName}");`),
+      (err, res) =>{
+        if (err) throw err;
+        console.log(res + " has been added.");
+        initPrompt();
+      }
+    });
   };
 
-  function addRole() {
 
-      initPrompt();
+  //took inspiration from https://github.com/nicolewallace09/employee-tracker/blob/master/server.js
+  function addRole() {
+    inquirer.prompt([
+      {
+        type: "input",
+        name: "title",
+        message: "What is the name of the new role?"
+      },
+      {
+        type: "input",
+        name: "salary",
+        message: "What does this role pay annually?"
+      }
+    ]).then((answer) => {
+      const params = [answer.title, answer.salary];
+      
+      connection.query(`SELECT name, id FROM department`, (err, res) => {
+        if (err) throw err;
+
+        const deptList = res.map(({name,id}) => ({name:name, value:id}));
+
+        inquirer.prompt(
+          {
+            name: "dept",
+            type: "list",
+            message: "What department does this role belong to?",
+            choices: deptList
+          }
+        ).then((answer) => {
+          const dept = answer.dept;
+          params.push(dept);
+
+          const sql = `INSERT INTO role (title, salary, department_id)
+          VALUES (?, ?, ?)`;
+
+          connection.query(sql, params, (err, result) => {
+          if (err) throw err;
+          console.log('Added ' + answer.title + " to roles."); 
+
+          initPrompt()
+          })
+        })
+      })
+      
+    });
   };
 
   function addEmployee() {
