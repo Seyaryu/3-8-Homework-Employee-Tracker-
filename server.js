@@ -226,7 +226,44 @@ function startApp() {
   };
 
   function updateEmployee() {
+    connection.query(`SELECT * from employee`, (err, res) => {
 
-      initPrompt();
+      const empList = data.map(({id, first_name, last_name}) => ({name: first_name + " " + last_name, value:id}));
+
+      inquirer.prompt([
+        {
+          type: 'list',
+          name: 'name',
+          message: "Which employee would you like to update?",
+          choices: empList
+        }
+      ]).then((answer) => {
+        let params = []
+        params.push(answer);
+
+        connection.query('SELECT * FROM role', (err, res) => {
+          if (err) throw err;
+
+          const roles = data.map(({id, title}) => ({name:title, value:id}));
+
+          inquirer.prompt([
+            {
+              type: 'list',
+              name: 'role',
+              message: "What is the employee's new role?",
+              choices: roles
+            }
+          ]).then((answer) => {
+            params.push(answer.role);
+
+            connection.query(`UPDATE employee SET role_id = ? Where id = ?`, params, (err, res) => {
+              if(err) throw err;
+              console.log(`${params[0]} has been updated.`);
+              initPrompt();
+            });
+          });
+        });
+      });
+    });
   };
 };
