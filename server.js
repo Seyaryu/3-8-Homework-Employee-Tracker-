@@ -105,19 +105,18 @@ function startApp() {
   };
 
   function addDept() {
-    inquirer.prompt(
+    inquirer.prompt([
       {
         name: "deptName",
         type: "input",
         message: "What is the new department's name?"
       }
-    ).then((answer) => {
-      connection.query(`INSERT INTO department (name) Values ("${answer.deptName}");`),
-      (err, res) =>{
+    ]).then((answer) => {
+      connection.query(`INSERT INTO department (name) Values (?)`, answer.deptName, (err, res) =>{
         if (err) throw err;
-        console.log(res + " has been added.");
+        console.log(answer.deptName + " has been added.");
         initPrompt();
-      }
+      })
     });
   };
 
@@ -159,7 +158,7 @@ function startApp() {
 
           connection.query(sql, params, (err, result) => {
           if (err) throw err;
-          console.log('Added ' + answer.title + " to roles."); 
+          console.log('Added ' + params[0] + " to roles."); 
 
           initPrompt()
           })
@@ -228,7 +227,7 @@ function startApp() {
   function updateEmployee() {
     connection.query(`SELECT * from employee`, (err, res) => {
 
-      const empList = data.map(({id, first_name, last_name}) => ({name: first_name + " " + last_name, value:id}));
+      const empList = res.map(({id, first_name, last_name}) => ({name: first_name + " " + last_name, value:id}));
 
       inquirer.prompt([
         {
@@ -239,12 +238,12 @@ function startApp() {
         }
       ]).then((answer) => {
         let params = []
-        params.push(answer);
+        params.push(answer.name);
 
         connection.query('SELECT * FROM role', (err, res) => {
           if (err) throw err;
 
-          const roles = data.map(({id, title}) => ({name:title, value:id}));
+          const roles = res.map(({id, title}) => ({name:title, value:id}));
 
           inquirer.prompt([
             {
@@ -258,7 +257,7 @@ function startApp() {
 
             connection.query(`UPDATE employee SET role_id = ? Where id = ?`, params, (err, res) => {
               if(err) throw err;
-              console.log(`${params[0]} has been updated.`);
+              console.log(`Employee has been updated.`);
               initPrompt();
             });
           });
